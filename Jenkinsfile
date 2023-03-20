@@ -40,7 +40,7 @@ pipeline {
                     sh 'mvn clean package'
                     def version = (readFile('pom.xml') =~ '<version>(.+)</version>')[0][2]
                     env.IMAGE_NAME = "$version-$BUILD_NUMBER"
-                    sh "docker build -t learnwithparth/spring-boot:${IMAGE_NAME} ."
+                    sh "docker build -t darshan297/spring-boot:${IMAGE_NAME} ."
                         
                     }
             }
@@ -69,30 +69,30 @@ pipeline {
                 script{echo 'deploying the application'
                 withCredentials([usernamePassword(credentialsId: 'docker', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
                     sh "echo ${PASSWORD} | docker login -u ${USERNAME} --password-stdin"
-                    sh "docker push learnwithparth/spring-boot:${IMAGE_NAME}"
+                    sh "docker push darshan297/spring-boot:${IMAGE_NAME}"
                 }}
                 
              }
         }
-        stage('commit version update'){
-            steps{
-                script{
-                    withCredentials([usernamePassword(credentialsId: 'git-credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
-                        sh 'git config --global user.email "jenkins@example.com"'
-                        sh 'git config --global user.name "jenkins"'
+//         stage('commit version update'){
+//             steps{
+//                 script{
+//                     withCredentials([usernamePassword(credentialsId: 'git-credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+//                         sh 'git config --global user.email "jenkins@example.com"'
+//                         sh 'git config --global user.name "jenkins"'
 
-                        sh 'git status'
-                        sh 'git branch'
-                        sh 'git config --list'
+//                         sh 'git status'
+//                         sh 'git branch'
+//                         sh 'git config --list'
 
-                        sh "git remote set-url origin https://${USERNAME}:${PASSWORD}@github.com/learnwithparth/springboot-jenkins.git"
-                        sh 'git add .'
-                        sh 'git commit -m "version change"'
-                        sh 'git push origin HEAD:jenkins-jobs'
-                    }
-                }
-            }
-        }
+//                         sh "git remote set-url origin https://${USERNAME}:${PASSWORD}@github.com/learnwithparth/springboot-jenkins.git"
+//                         sh 'git add .'
+//                         sh 'git commit -m "version change"'
+//                         sh 'git push origin HEAD:jenkins-jobs'
+//                     }
+//                 }
+//             }
+//         }
     }
     post{
         always{
